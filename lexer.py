@@ -23,27 +23,49 @@ class Token:
     def __repr__(self):
         if self.value: return f"{self.type}:{self.value}"
         else: return f"{self.type}"
-        
+
+
+##### POSITION #####
+
+class Position:
+    def __init__(self):
+        self.index = -1
+        self.column = 1
+        self.row = 1
+
+    def __repr__(self):
+       return f"idx:{self.index}, col:{self.column}, row:{self.row}\n"
+
+    def advColumn(self):
+        self.index += 1
+        self.column += 1
+    
+    def advRow(self):
+        self.column = 0
+        self.row += 1
 
 ##### LEXER #####
 
 class Lexer:
     def __init__(self, text):
         self.text = text
-        self.index = -1
+        self.pos = Position()
         self.tokens = []
         self.current_char = None
         self.next()
     
     def next(self):
-        self.index += 1
-        self.current_char = self.text[self.index] if self.index < len(self.text) else None
+        self.pos.advColumn()
+        self.current_char = self.text[self.pos.index] if self.pos.index < len(self.text) else None
             
     def tokenize(self):
 
         while self.current_char != None:
             match self.current_char:
                 case ' ' | '\t':
+                    self.next()
+                case '\n':
+                    self.pos.advRow()
                     self.next()
                 case '+':
                     self.tokens.append(Token(T_PLUS))
@@ -66,7 +88,8 @@ class Lexer:
                 case _ if self.current_char in DIGITS:
                     self.makeDigit()
                 case _:
-                    raise ValueError(f"error unexpected input: '{self.current_char}'")
+                    raise ValueError(f"error unexpected input: '{self.current_char}' at line {self.pos.row}:{self.pos.column}")
+        return self.tokens
     
     def makeDigit(self):
         digits = ""
@@ -78,8 +101,8 @@ class Lexer:
             self.next()
 
         if dot > 1:
-            raise ValueError(f"floating number: '{digits}' contains 2 or more '{self.current_char}'")
+            raise ValueError(f"floating number: '{digits}' contains 2 or more '.'")
         
-        if dot: self.tokens.append(Token(T_FLOAT, digits))
-        else: self.tokens.append(Token(T_INT, digits))
+        if dot: self.tokens.append(Token(T_FLOAT, float(digits)))
+        else: self.tokens.append(Token(T_INT, int(digits)))
 
