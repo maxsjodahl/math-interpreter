@@ -28,10 +28,10 @@ class Token:
 ##### POSITION #####
 
 class Position:
-    def __init__(self):
-        self.index = -1
-        self.column = 1
-        self.row = 1
+    def __init__(self, idx=-1, col=0, row=1):
+        self.index = idx
+        self.column = col
+        self.row = row
 
     def __repr__(self):
        return f"idx:{self.index}, col:{self.column}, row:{self.row}\n"
@@ -43,6 +43,10 @@ class Position:
     def advRow(self):
         self.column = 0
         self.row += 1
+
+    ### Might want in the future, dont know yet
+    # def copy(self):
+    #     return Position(self.index, self.column, self.row)
 
 ##### LEXER #####
 
