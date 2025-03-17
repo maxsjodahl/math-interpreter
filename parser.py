@@ -3,7 +3,7 @@ import lexer
 class NumberNode:
     def __init__(self, token):
         self.token: lexer.Token = token
-    
+
     def __repr__(self):
         return f'{self.token}'
 
@@ -42,17 +42,17 @@ class Parser:
     def parse(self):
         result = self.expr()
         return result
-    
+
     def factor(self):
         token = self.current_token
 
         if token.type in [lexer.T_INT, lexer.T_FLOAT]:
             self.advance()
             return NumberNode(token)
-        
+
     def term(self):
         left = self.factor()
-        
+
         while self.current_token.type in [lexer.T_MUL, lexer.T_DIV]:
             op_token = self.current_token
             self.advance()
@@ -60,7 +60,7 @@ class Parser:
             left = BinaryNode(left, op_token, right)
 
         return left
-    
+
     def expr(self):
         left = self.term()
 

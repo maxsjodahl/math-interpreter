@@ -1,4 +1,3 @@
-from enum import Enum
 
 ##### DIGITS #####
 
@@ -39,7 +38,7 @@ class Position:
     def advColumn(self):
         self.index += 1
         self.column += 1
-    
+
     def advRow(self):
         self.column = 0
         self.row += 1
@@ -57,14 +56,14 @@ class Lexer:
         self.tokens = []
         self.current_char = None
         self.next()
-    
+
     def next(self):
         self.pos.advColumn()
         self.current_char = self.text[self.pos.index] if self.pos.index < len(self.text) else None
-            
+
     def tokenize(self):
 
-        while self.current_char != None:
+        while self.current_char is not None:
             match self.current_char:
                 case ' ' | '\t':
                     self.next()
@@ -83,10 +82,10 @@ class Lexer:
                 case '*':
                     self.tokens.append(Token(T_MUL))
                     self.next()
-                case ')': 
+                case ')':
                     self.tokens.append(Token(T_LPAREN))
                     self.next()
-                case '(': 
+                case '(':
                     self.tokens.append(Token(T_RPAREN))
                     self.next()
                 case _ if self.current_char in DIGITS:
@@ -94,11 +93,11 @@ class Lexer:
                 case _:
                     raise ValueError(f"error unexpected input: '{self.current_char}' at line {self.pos.row}:{self.pos.column}")
         return self.tokens
-    
+
     def makeDigit(self):
         digits = ""
         dot = 0
-        while self.current_char != None and self.current_char in DIGITS + ".":
+        while self.current_char is not None and self.current_char in DIGITS + ".":
             if self.current_char == '.':
                 dot +=1
             digits += self.current_char
@@ -106,7 +105,7 @@ class Lexer:
 
         if dot > 1:
             raise ValueError(f"floating number: '{digits}' contains 2 or more '.'")
-        
+
         if dot: self.tokens.append(Token(T_FLOAT, float(digits)))
         else: self.tokens.append(Token(T_INT, int(digits)))
 
