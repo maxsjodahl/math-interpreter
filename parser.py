@@ -1,14 +1,25 @@
 import lexer
 
+
+##### PARSER NODES #####
+
 class NumberNode:
     def __init__(self, token):
         self.token: lexer.Token = token
 
     def __repr__(self):
         return f'{self.token}'
+    
+class UnaryNode:
+    def __init__(self, s_token, v_token):
+        self.s_token = s_token
+        self.v_token = v_token
 
+    def __repr__(self):
+        return f'({self.s_token}, {self.v_token})'
+        
 class BinaryNode:
-    def __init__(self, left=None, op=None, right=None):
+    def __init__(self, left, op, right):
         self.left = left
         self.right = right
         self.op: lexer.Token = op
@@ -25,6 +36,8 @@ class Parser:
 # term : factor ((MUL|DIV) factor)*
 
 # factor : INT|FLOAT
+#        | (MINUS|PLUS) INT|FLOAT
+         
 
     def __init__(self, text):
         self.tokens: list[lexer.Token] = lexer.Lexer(text).tokenize()
@@ -49,6 +62,22 @@ class Parser:
         if token.type in [lexer.T_INT, lexer.T_FLOAT]:
             self.advance()
             return NumberNode(token)
+        
+        elif token.type in [lexer.T_MINUS, lexer.T_PLUS]:
+            self.advance()
+            v_token = self.current_token
+            self.advance()
+            return UnaryNode(token, v_token)
+        
+        elif token.type in [lexer.T_LPAREN]:
+            self.advance()
+            expr = self.expr()
+            
+            if self.current_token.type in [lexer.T_RPAREN]:
+                self.advance()
+                return expr
+            else:
+                raise ValueError ("error: expected ')'")
 
     def term(self):
         left = self.factor()
