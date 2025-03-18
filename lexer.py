@@ -83,10 +83,10 @@ class Lexer:
                     self.tokens.append(Token(T_MUL))
                     self.next()
                 case ')':
-                    self.tokens.append(Token(T_LPAREN))
+                    self.tokens.append(Token(T_RPAREN))
                     self.next()
                 case '(':
-                    self.tokens.append(Token(T_RPAREN))
+                    self.tokens.append(Token(T_LPAREN))
                     self.next()
                 case _ if self.current_char in DIGITS:
                     self.makeDigit()
