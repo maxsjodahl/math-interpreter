@@ -1,4 +1,4 @@
-import lexer
+import src.lexer as lexer
 
 
 ##### PARSER NODES #####
