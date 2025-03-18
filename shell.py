@@ -9,7 +9,7 @@ while True:
         # text = "2+3*5"
         lex = Lexer(text)
         pars = Parser(text)
-    
+
         tokens = lex.tokenize()
         print(f"{tokens}")
         ast = pars.parse()

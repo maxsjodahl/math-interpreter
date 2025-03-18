@@ -9,7 +9,7 @@ class NumberNode:
 
     def __repr__(self):
         return f'{self.token}'
-    
+
 class UnaryNode:
     def __init__(self, s_token, v_token):
         self.s_token = s_token
@@ -17,7 +17,7 @@ class UnaryNode:
 
     def __repr__(self):
         return f'({self.s_token}, {self.v_token})'
-        
+
 class BinaryNode:
     def __init__(self, left, op, right):
         self.left = left
@@ -37,7 +37,7 @@ class Parser:
 
 # factor : INT|FLOAT
 #        | (MINUS|PLUS) INT|FLOAT
-         
+
 
     def __init__(self, text):
         self.tokens: list[lexer.Token] = lexer.Lexer(text).tokenize()
@@ -62,17 +62,17 @@ class Parser:
         if token.type in [lexer.T_INT, lexer.T_FLOAT]:
             self.advance()
             return NumberNode(token)
-        
+
         elif token.type in [lexer.T_MINUS, lexer.T_PLUS]:
             self.advance()
             v_token = self.current_token
             self.advance()
             return UnaryNode(token, v_token)
-        
+
         elif token.type in [lexer.T_LPAREN]:
             self.advance()
             expr = self.expr()
-            
+
             if self.current_token.type in [lexer.T_RPAREN]:
                 self.advance()
                 return expr
