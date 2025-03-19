@@ -39,8 +39,8 @@ class Parser:
 #        | (MINUS|PLUS) INT|FLOAT
 
 
-    def __init__(self, text):
-        self.tokens: list[lexer.Token] = lexer.Lexer(text).tokenize()
+    def __init__(self, tokens):
+        self.tokens: list[lexer.Token] = tokens
         self.index = -1
         self.advance()
 
@@ -80,23 +80,18 @@ class Parser:
                 raise ValueError ("error: expected ')'")
 
     def term(self):
-        left = self.factor()
-
-        while self.current_token.type in [lexer.T_MUL, lexer.T_DIV]:
-            op_token = self.current_token
-            self.advance()
-            right = self.factor()
-            left = BinaryNode(left, op_token, right)
-
-        return left
+        return self.op_helper(self.factor(), [lexer.T_MUL, lexer.T_DIV])
 
     def expr(self):
-        left = self.term()
+        return self.op_helper(self.term(), [lexer.T_PLUS, lexer.T_MINUS])
 
-        while self.current_token.type in [lexer.T_PLUS, lexer.T_MINUS]:
+    def op_helper(self, func, list):
+        left = func
+
+        while self.current_token.type in list:
             op_token = self.current_token
             self.advance()
-            right = self.term()
+            right = func
             left = BinaryNode(left, op_token, right)
 
         return left
