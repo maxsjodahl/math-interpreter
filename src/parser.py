@@ -1,4 +1,5 @@
 import src.lexer as lexer
+from src.util import CustomError
 
 
 ##### PARSER NODES #####
@@ -59,8 +60,12 @@ class Parser:
 
     def parse(self):
         result = [self.expr()]
-        if self.current_token.type in [lexer.T_SEP]:
+        # print(self.current_token.type)
+        while self.current_token.type in [lexer.T_SEP]:
             self.advance()
+            if self.current_token.type in [lexer.T_SEP]:
+                result.append(None)
+                continue
             result.append(self.expr())
         return result
 
@@ -73,9 +78,14 @@ class Parser:
 
         elif token.type in [lexer.T_MINUS, lexer.T_PLUS]:
             self.advance()
-            v_token = self.current_token
-            self.advance()
-            return UnaryNode(token, v_token)
+            if self.current_token.type in [lexer.T_INT, lexer.T_FLOAT]:
+                v_token = self.current_token
+                self.advance()
+                return UnaryNode(token, v_token)
+            else:
+                raise CustomError(
+                    "error: unexpected factor", self.current_token.position
+                )
 
         elif token.type in [lexer.T_LPAREN]:
             self.advance()
@@ -85,9 +95,12 @@ class Parser:
                 self.advance()
                 return expr
             else:
-                raise ValueError("error: expected ')'")
-        elif token.type in [lexer.T_EOF]:
-            raise ValueError("factor error: EOF")
+                raise CustomError(
+                    "error: unclosed parentheses, expected ')'", token.position
+                )
+        # elif token.type in [lexer.T_SEP, lexer.T_EOF]:
+        else:
+            raise CustomError("factor error: unexpected value", token.position)
 
     def term(self):
         return self.op_helper(self.factor, [lexer.T_MUL, lexer.T_DIV])
@@ -105,6 +118,8 @@ class Parser:
             left = BinaryNode(left, op_token, right)
 
         if self.current_token.type in [lexer.T_INT, lexer.T_FLOAT]:
-            raise SyntaxError("syntax error: expected EOF")
+            raise CustomError(
+                "syntax error: expected operand", self.current_token.position
+            )
 
         return left

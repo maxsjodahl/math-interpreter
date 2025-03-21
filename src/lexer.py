@@ -1,4 +1,4 @@
-from src.createErrorText import CustomError
+from src.util import CustomError
 ##### DIGITS #####
 
 DIGITS = "0123456789"
@@ -22,7 +22,7 @@ T_EOF = "EOF"
 
 
 class Token:
-    def __init__(self, type_, position, value=None):
+    def __init__(self, type_, position=None, value=None):
         self.type = type_
         self.position = position
         self.value = value
@@ -68,6 +68,7 @@ class Lexer:
         self.pos = Position()
         self.tokens = []
         self.current_char = None
+        self.parentheses = 0
         self.next()
 
     def next(self):
@@ -85,6 +86,10 @@ class Lexer:
                     self.tokens.append(Token(T_SEP, self.pos.copy()))
                     self.pos.advRow()
                     self.next()
+                case ";":
+                    self.tokens.append(Token(T_SEP, self.pos.copy()))
+                    self.pos.advRow()
+                    self.next()
                 case "+":
                     self.tokens.append(Token(T_PLUS, self.pos.copy()))
                     self.next()
@@ -98,22 +103,26 @@ class Lexer:
                     self.tokens.append(Token(T_MUL, self.pos.copy()))
                     self.next()
                 case ")":
+                    self.parentheses -= 1
+                    if self.parentheses < 0:
+                        raise CustomError(
+                            "unexpected ')', parentheses never opened", self.pos.copy()
+                        )
                     self.tokens.append(Token(T_RPAREN, self.pos.copy()))
                     self.next()
                 case "(":
+                    self.parentheses += 1
                     self.tokens.append(Token(T_LPAREN, self.pos.copy()))
                     self.next()
                 case _ if self.current_char in DIGITS:
-                    err = self.makeDigit()
-                    if err is not None:
-                        return None, err
+                    self.makeDigit()
                 case _:
                     raise CustomError(
                         f"error unexpected input: '{self.current_char}' at line {self.pos.row + 1}:{self.pos.column}",
                         self.pos.copy(),
                     )
         self.tokens.append(Token(T_EOF, self.pos.copy()))
-        return self.tokens, None
+        return self.tokens
 
     def makeDigit(self):
         digits = ""

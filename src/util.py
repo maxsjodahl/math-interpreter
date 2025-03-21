@@ -34,4 +34,7 @@ class ErrorText:
                 s.append(" ")
             else:
                 s.append("^")
+        if pos.column >= len(self.lines[pos.row]):
+            s.append("^")
+
         return "".join(err) + "".join(s)
