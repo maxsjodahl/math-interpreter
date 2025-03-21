@@ -23,10 +23,10 @@ try:
     inter = Interpreter(ast)
     result = inter.run()
 
-    ptext = re.split('\n', text)
-    
+    ptext = re.split("\n", text)
+
     for i, line in enumerate(ptext):
-        print(f'{line.strip()} = {result[i]}')
+        print(f"{line.strip()} = {result[i]}")
 
 except CustomError as e:
     # print the error without the traceback
