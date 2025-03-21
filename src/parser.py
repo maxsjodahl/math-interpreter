@@ -2,6 +2,9 @@ import src.lexer as lexer
 
 
 ##### PARSER NODES #####
+class ExpressionNode:
+    def __init__(self):
+        pass
 
 class NumberNode:
     def __init__(self, token):
@@ -53,7 +56,10 @@ class Parser:
 
 
     def parse(self):
-        result = self.expr()
+        result = [self.expr()]
+        if self.current_token.type in [lexer.T_SEP]:
+            self.advance()
+            result.append(self.expr())
         return result
 
     def factor(self):
@@ -78,21 +84,28 @@ class Parser:
                 return expr
             else:
                 raise ValueError ("error: expected ')'")
+        elif token.type in [lexer.T_EOF]:
+            raise ValueError("factor error: EOF")
+
 
     def term(self):
-        return self.op_helper(self.factor(), [lexer.T_MUL, lexer.T_DIV])
+        return self.op_helper(self.factor, [lexer.T_MUL, lexer.T_DIV])
 
     def expr(self):
-        return self.op_helper(self.term(), [lexer.T_PLUS, lexer.T_MINUS])
+        return self.op_helper(self.term, [lexer.T_PLUS, lexer.T_MINUS])
+        
 
     def op_helper(self, func, list):
-        left = func
+        left = func()
 
         while self.current_token.type in list:
             op_token = self.current_token
             self.advance()
-            right = func
+            right = func()
             left = BinaryNode(left, op_token, right)
+
+        if self.current_token.type in [lexer.T_INT, lexer.T_FLOAT]:
+            raise SyntaxError("syntax error: expected EOF")
 
         return left
 
