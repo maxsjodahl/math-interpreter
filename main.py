@@ -13,10 +13,13 @@ def extention_validation(filepath):
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument("-o", "--output", help="specified output file (optional)")
 group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument("-cl", "--cline", help="uses CLI input as expressions")
 group.add_argument(
-    "-f", "--filepath", type=extention_validation, help="uses file from filepath"
+    "-cl", "--cline", help="uses command-line argument as input expressions"
+)
+group.add_argument(
+    "-f", "--filepath", type=extention_validation, help="uses file as input"
 )
 args = parser.parse_args()
 # while True:
@@ -44,7 +47,6 @@ try:
 
     ptext = re.split("\n|;", text)
 
-    print("\nOutput:")
     s = []
     for i, line in enumerate(ptext):
         st = line.strip()
@@ -54,7 +56,13 @@ try:
 
         s.append(f"{st} = {result[i]}")
         s.append("\n")
-    print("".join(s[:-1]))
+
+    if args.output:
+        f = open(args.output, "x")
+        f.write("".join(s[:-1]))
+    else:
+        print("\nOutput:")
+        print("".join(s[:-1]))
 
 except CustomError as e:
     # print the error without the traceback
