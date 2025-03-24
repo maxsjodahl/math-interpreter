@@ -59,22 +59,6 @@ To run the test suite, use:
 pytest tests/ -v
 ```
 
-## Project Structure
-```
-math-interpreter/
-├── src/
-│   ├── lexer.py
-│   ├── parser.py
-│   ├── interpreter.py
-│   └── __init__.py
-├── tests/
-│   ├── test_interpreter.py
-│   └── __init__.py
-├── main.py
-├── requirements.txt
-└── README.md
-```
-
 ## License
 This project is licensed under the MIT License.
 
