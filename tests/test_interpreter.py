@@ -3,7 +3,8 @@ import pytest
 from src.lexer import Lexer
 from src.parser import Parser
 from src.interpreter import Interpreter
-from src.util import CustomError, ErrorText
+from src.util import CustomError
+
 
 def _setup_interpreter(expression):
     lex = Lexer(expression)
@@ -17,9 +18,7 @@ def _setup_interpreter(expression):
     return result
 
 
-
 def test_valid_expression():
-    
     result = _setup_interpreter("3*(5+15/(1+2*2))-1")
     assert result[0] == 23, "expected 23 but got {}".format(result)
 
@@ -29,8 +28,8 @@ def test_valid_expression():
     result = _setup_interpreter("3*(5+15/(1+2*2))+-1")
     assert result[0] == 23, "expected 23 but got {}".format(result)
 
-def test_invalid_syntax():
 
+def test_invalid_syntax():
     with pytest.raises(CustomError) as excinfo:
         _setup_interpreter("3**(5+15/(1+2*2))-1")
 
@@ -42,17 +41,17 @@ def test_invalid_syntax():
     assert "syntax error: expected operand" in str(excinfo.value)
 
     with pytest.raises(CustomError) as excinfo:
-            _setup_interpreter("3*(5+15/(1+2*2))1")
+        _setup_interpreter("3*(5+15/(1+2*2))1")
 
     assert "syntax error: expected operand, got '1'" in str(excinfo.value)
 
     with pytest.raises(CustomError) as excinfo:
-            _setup_interpreter("1---1")
+        _setup_interpreter("1---1")
 
     assert "syntax error: unexpected factor" in str(excinfo.value)
 
+
 def test_invalid_expression():
-     
     with pytest.raises(CustomError) as excinfo:
         _setup_interpreter("")
 
