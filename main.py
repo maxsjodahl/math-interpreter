@@ -19,7 +19,7 @@ group.add_argument(
     "-cl", "--cline", help="uses command-line argument as input expressions"
 )
 group.add_argument(
-    "-f", "--filepath", type=extention_validation, help="uses file as input"
+    "-f", "--filepath", type=extention_validation, help="uses file as input (*.mat)"
 )
 args = parser.parse_args()
 # while True:
