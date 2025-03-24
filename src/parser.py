@@ -84,7 +84,7 @@ class Parser:
                 return UnaryNode(token, v_token)
             else:
                 raise CustomError(
-                    "error: unexpected factor", self.current_token.position
+                    "syntax error: unexpected factor", self.current_token.position
                 )
 
         elif token.type in [lexer.T_LPAREN]:
@@ -93,6 +93,10 @@ class Parser:
 
             if self.current_token.type in [lexer.T_RPAREN]:
                 self.advance()
+                if self.current_token.type in [lexer.T_INT, lexer.T_FLOAT]:
+                    raise CustomError(
+                        f"syntax error: expected operand, got '{self.current_token.value}'", token.position
+                    )
                 return expr
             else:
                 raise CustomError(
@@ -117,7 +121,7 @@ class Parser:
             right = func()
             left = BinaryNode(left, op_token, right)
 
-        if self.current_token.type in [lexer.T_INT, lexer.T_FLOAT]:
+        if self.current_token.type in [lexer.T_INT, lexer.T_FLOAT, lexer.T_LPAREN]:
             raise CustomError(
                 "syntax error: expected operand", self.current_token.position
             )
