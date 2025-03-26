@@ -3,9 +3,6 @@ from src.util import CustomError
 
 
 ##### PARSER NODES #####
-class ExpressionNode:
-    def __init__(self):
-        pass
 
 
 class NumberNode:
@@ -60,7 +57,7 @@ class Parser:
 
     def parse(self):
         result = [self.expr()]
-        # print(self.current_token.type)
+
         while self.current_token.type in [lexer.T_SEP]:
             self.advance()
             if self.current_token.type in [lexer.T_SEP]:
@@ -84,7 +81,8 @@ class Parser:
                 return UnaryNode(token, v_token)
             else:
                 raise CustomError(
-                    "syntax error: unexpected factor", self.current_token.position
+                    f"syntax error: unexpected factor '{self.current_token.value}'",
+                    self.current_token.position,
                 )
 
         elif token.type in [lexer.T_LPAREN]:
@@ -95,14 +93,14 @@ class Parser:
                 self.advance()
                 if self.current_token.type in [lexer.T_INT, lexer.T_FLOAT]:
                     raise CustomError(
-                        f"syntax error: expected operand, got '{self.current_token.value}'", token.position
+                        f"syntax error: expected operand, got '{self.current_token.value}'",
+                        token.position,
                     )
                 return expr
             else:
                 raise CustomError(
                     "error: unclosed parentheses, expected ')'", token.position
                 )
-        # elif token.type in [lexer.T_SEP, lexer.T_EOF]:
         else:
             raise CustomError("factor error: unexpected value", token.position)
 

@@ -1,7 +1,8 @@
 import re
 
-
 ##### ERROR #####
+
+
 class CustomError(Exception):
     def __init__(self, message, pos):
         super().__init__(message)
@@ -13,16 +14,7 @@ class CustomError(Exception):
 
 class ErrorText:
     def __init__(self, text):
-        # self.text = text
         self.lines = re.split("\n", text)
-
-    # def createLines(self, text):
-    #     lines = re.split('\n', text)
-    #     # slines = []
-    #     # for line in lines:
-    #     #     slines.append(line.strip())
-    #     # return slines
-    #     return lines
 
     def makeErrorText(self, pos):
         err = [f"line: {pos.row + 1} | ", f"{self.lines[pos.row]}"]

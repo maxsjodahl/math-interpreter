@@ -1,11 +1,14 @@
 import src.lexer as lexer
 import src.parser as parser
+from src.util import CustomError
+
+
+##### INTERPRETER #####
 
 
 class Interpreter:
     def __init__(self, ast):
         self.ast = ast
-        # self.vars = []
 
     def run(self):
         result = []
@@ -33,7 +36,9 @@ class Interpreter:
                     if right != 0:
                         return self.interpret(astNode.left) / right
                     else:
-                        raise ValueError("cannot divide with zero")
+                        raise CustomError(
+                            "error: cannot divide with 0", astNode.op.position
+                        )
 
                 case lexer.T_PLUS:
                     return self.interpret(astNode.left) + self.interpret(astNode.right)
@@ -42,4 +47,7 @@ class Interpreter:
                     return self.interpret(astNode.left) - self.interpret(astNode.right)
 
                 case _:
-                    raise SyntaxError(f"unexpected binary operation {astNode.op.type}")
+                    raise CustomError(
+                        f"error: unexpected binary operation {astNode.op.type}",
+                        astNode.op.position,
+                    )

@@ -1,4 +1,5 @@
 from src.util import CustomError
+
 ##### DIGITS #####
 
 DIGITS = "0123456789"
@@ -54,7 +55,6 @@ class Position:
         self.column = -1
         self.row += 1
 
-    ### Might want in the future, dont know yet
     def copy(self):
         return Position(self.index, self.column, self.row)
 
@@ -82,45 +82,57 @@ class Lexer:
             match self.current_char:
                 case " " | "\t":
                     self.next()
+
                 case "\n":
                     self.tokens.append(Token(T_SEP, self.pos.copy()))
                     self.pos.advRow()
                     self.next()
+
                 case ";":
                     self.tokens.append(Token(T_SEP, self.pos.copy()))
                     self.pos.advRow()
                     self.next()
+
                 case "+":
                     self.tokens.append(Token(T_PLUS, self.pos.copy()))
                     self.next()
+
                 case "-":
                     self.tokens.append(Token(T_MINUS, self.pos.copy()))
                     self.next()
+
                 case "/":
                     self.tokens.append(Token(T_DIV, self.pos.copy()))
                     self.next()
+
                 case "*":
                     self.tokens.append(Token(T_MUL, self.pos.copy()))
                     self.next()
+
                 case ")":
                     self.parentheses -= 1
                     if self.parentheses < 0:
                         raise CustomError(
-                            "unexpected ')', parentheses never opened", self.pos.copy()
+                            "error: unexpected ')', parentheses never opened",
+                            self.pos.copy(),
                         )
                     self.tokens.append(Token(T_RPAREN, self.pos.copy()))
                     self.next()
+
                 case "(":
                     self.parentheses += 1
                     self.tokens.append(Token(T_LPAREN, self.pos.copy()))
                     self.next()
+
                 case _ if self.current_char in DIGITS:
                     self.makeDigit()
+
                 case _:
                     raise CustomError(
-                        f"error unexpected input: '{self.current_char}' at line {self.pos.row + 1}:{self.pos.column}",
+                        f"error: unexpected input '{self.current_char}' at line {self.pos.row + 1}:{self.pos.column}",
                         self.pos.copy(),
                     )
+
         self.tokens.append(Token(T_EOF, self.pos.copy()))
         return self.tokens
 
@@ -128,6 +140,7 @@ class Lexer:
         digits = ""
         dot = 0
         pos = self.pos.copy()
+
         while self.current_char is not None and self.current_char in DIGITS + ".":
             if self.current_char == ".":
                 dot += 1
@@ -135,9 +148,7 @@ class Lexer:
             self.next()
 
         if dot > 1:
-            raise CustomError(
-                f"floating number: '{digits}' contains 2 or more '.'", pos
-            )
+            raise CustomError(f"error: float '{digits}' contains too many '.'", pos)
 
         if dot:
             self.tokens.append(Token(T_FLOAT, pos, float(digits)))
