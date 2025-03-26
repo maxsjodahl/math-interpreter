@@ -15,7 +15,10 @@ def extention_validation(filepath):
 parser = argparse.ArgumentParser()
 parser.add_argument("-o", "--output", help="specified output file (optional)")
 parser.add_argument(
-    "--show", action="store_true", help=" shows the generated tokens and AST (optional)"
+    "-s",
+    "--show",
+    action="store_true",
+    help=" shows the generated tokens and AST (optional)",
 )
 
 group = parser.add_mutually_exclusive_group(required=True)

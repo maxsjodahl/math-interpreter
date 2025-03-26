@@ -27,11 +27,12 @@ python3 main.py --help
 This will display the following help message:
 
 ```
-usage: main.py [-h] [-o OUTPUT] (-cl CLINE | -f FILEPATH)
+usage: main.py [-h] [-o OUTPUT] [-s] (-cl CLINE | -f FILEPATH)
 
 options:
   -h, --help            show this help message and exit
   -o, --output OUTPUT   specified output file (optional)
+  -s, --show            shows the generated tokens and AST (optional)
   -cl, --cline CLINE    uses command-line argument as input expressions
   -f, --filepath FILEPATH
                         uses file as input (*.mat)
